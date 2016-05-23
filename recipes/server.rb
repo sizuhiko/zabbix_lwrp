@@ -51,6 +51,12 @@ db_config = {
   }
 }
 
+# Zabbix version config
+
+zabbix_version = {
+  version: node['zabbix']['version']
+}
+
 # Install packages
 
 package 'zabbix-server-pgsql' do
@@ -73,11 +79,16 @@ service node['zabbix']['server']['service'] do
   action [:enable]
 end
 
+execute 'backup original config file' do
+  command "cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf.org"
+  action :run
+end
+
 template '/etc/zabbix/zabbix_server.conf' do
   source 'zabbix-server.conf.erb'
   owner 'root'
   group 'root'
   mode '0640'
-  variables(node['zabbix']['server']['config'].merge(db_config).to_hash)
+  variables(node['zabbix']['server']['config'].merge(db_config).merge(zabbix_version).to_hash)
   notifies :restart, "service[#{node['zabbix']['server']['service']}]", :immediately
 end

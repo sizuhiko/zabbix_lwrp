@@ -38,7 +38,9 @@ SenderFrequency=300
 # Cache params
 
 <% @cache.each_pair do |parameter, value| %>
+<% unless (Gem::Version.new(@version) >= Gem::Version.new("3.0")) && %w(HistoryTextCacheSize).include?(parameter) %>
 <%= parameter %>=<%= value %>
+<% end %>
 <% end %>
 
 # Timeouts and delays

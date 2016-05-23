@@ -26,8 +26,9 @@ Installs and configures Zabbix agent and server with PostgreSQL and Nginx. Provi
 # Attributes
 
 ## Default
-* `node['zabbix']['version']` -  Defaults to `2.4`.
-* `node['zabbix']['api-version']` -  Defaults to `2.4.4`.
+* `node['zabbix']['version']` -  Defaults to `3.0`.
+* `node['zabbix']['api-version']` -  Defaults to `2.4.7`.
+    * 3.0.x (api version 3.0.x) /zabbixapi 2.4.x master. see [zabbixapi gem](https://github.com/express42/zabbixapi)
 
 ## Agent
 * `node['zabbix']['agent']['include']` -  Defaults to `/opt/zabbix/etc`.

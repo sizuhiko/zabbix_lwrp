@@ -82,12 +82,20 @@ action :create do
 
   db_connect_string = "PGPASSWORD=#{db_pass} psql -q -t -h #{db_host} -p #{db_port} -U #{db_user} -d #{db_name}"
 
-  execute 'Provisioning zabbix database' do
-    command "#{db_connect_string} -f /usr/share/zabbix-server-pgsql/schema.sql; \
-             #{db_connect_string} -f /usr/share/zabbix-server-pgsql/images.sql; \
-             #{db_connect_string} -f /usr/share/zabbix-server-pgsql/data.sql;"
-    only_if { check_zabbix_db(db_connect_string) }
-    action :run
+  if Gem::Version.new(node['zabbix']['version']) >= Gem::Version.new("3.0")
+    execute 'Provisioning zabbix database' do
+      command "zcat /usr/share/doc/zabbix-server-pgsql/create.sql.gz | #{db_connect_string}"
+      only_if { check_zabbix_db(db_connect_string) }
+      action :run
+    end
+  else
+    execute 'Provisioning zabbix database' do
+      command "#{db_connect_string} -f /usr/share/zabbix-server-pgsql/schema.sql; \
+               #{db_connect_string} -f /usr/share/zabbix-server-pgsql/images.sql; \
+               #{db_connect_string} -f /usr/share/zabbix-server-pgsql/data.sql;"
+      only_if { check_zabbix_db(db_connect_string) }
+      action :run
+    end
   end
 
   ruby_block 'Set password for web user Admin' do
